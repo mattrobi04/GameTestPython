@@ -1,33 +1,35 @@
 import pygame as pg
+from PIL import Image 
 import sys
 
-
-SCREEN_SIZE = (1000, 1000)
+SCREEN_SIZE = (700, 700)
 SCREEN_COLOR = (255, 255, 255)
 
 
 pg.init()
+
+img = Image.open("rocketImageOnline.jpeg")
+
 screen_surface = pg.display.set_mode(SCREEN_SIZE)
 pg.display.set_caption("GameTest1")
 CLOCK = pg.time.Clock()
 
-player_x = 0
-player_y = 0
+player_x = 100  
+player_y = 100
 player_input = {"left": False, "right": False, "up": False, "down": False}
-player_vel = [0,0]
+player_vel = [0, 0]
 player_speed = 5
-
+player_radius = 50  
 
 def check_input(key, value):
-    if event.key == pg.K_LEFT:
+    if key == pg.K_LEFT:
         player_input["left"] = value
-    elif event.key == pg.K_RIGHT:
+    elif key == pg.K_RIGHT:
         player_input["right"] = value
-    elif event.key == pg.K_DOWN:
+    elif key == pg.K_DOWN:
         player_input["down"] = value
-    elif event.key == pg.K_UP:
+    elif key == pg.K_UP:
         player_input["up"] = value
-
 
 running = True
 while running:
@@ -42,18 +44,30 @@ while running:
     player_vel[0] = player_input["right"] - player_input["left"]
     player_vel[1] = player_input["down"] - player_input["up"]
 
+    new_player_x = player_x + player_vel[0] * player_speed
+    new_player_y = player_y + player_vel[1] * player_speed
+
+    if new_player_x - player_radius < 0:
+        new_player_x = player_radius
+    if new_player_x + player_radius > SCREEN_SIZE[0]:
+        new_player_x = SCREEN_SIZE[0] - player_radius
+    if new_player_y - player_radius < 0:
+        new_player_y = player_radius
+    if new_player_y + player_radius > SCREEN_SIZE[1]:
+        new_player_y = SCREEN_SIZE[1] - player_radius
+
+    player_x = new_player_x
+    player_y = new_player_y
 
     screen_surface.fill(SCREEN_COLOR)
     CLOCK.tick(60)
-    # Player is circle
-    pg.draw.circle(screen_surface, (0, 0, 200), (player_x,player_y), 100)
 
-    player_x += player_vel[0] * player_speed
-    player_y += player_vel[1] * player_speed
+    # Circle is moveable
+    pg.draw.circle(screen_surface, (0, 0, 200), (player_x, player_y), player_radius)
 
-    
-    rect = pg.draw.rect(screen_surface, [255, 0, 0], [50, 50, 90, 90], 1)
+    pg.draw.rect(screen_surface, [255, 0, 0], [50, 50, 90, 90], 1)
+
     pg.display.flip()
-        
+
 pg.quit()
 sys.exit()
